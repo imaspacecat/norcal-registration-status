@@ -15,7 +15,7 @@ This Python script leverages web scraping to gather team registration status dat
 
 2. Run the script:
     ```bash
-    python team_status_scraper.py
+    python main.py
     ```
 
 ## Output
