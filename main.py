@@ -1,6 +1,7 @@
 import requests as req
 from bs4 import BeautifulSoup
 import csv
+import concurrent.futures
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
@@ -30,14 +31,22 @@ def scrape_team_status(team_number):
     return dict(zip(qt_status[::2], qt_status[1::2]))
 
 
+def scrape_and_write_team_status(team_number, writer):
+    result = scrape_team_status(team_number)
+    writer.writerow({"Team Number": int(team_number), **result})
+
+
 csv_filename = "team_status.csv"
 with open(csv_filename, mode="w", newline="") as file:
     fieldnames = ["Team Number", "QT #1", "QT #2", "QT #3"]
     writer = csv.DictWriter(file, fieldnames=fieldnames)
     writer.writeheader()
-    for i, team_number in enumerate(teams):
-        result = scrape_team_status(team_number)
-        print(type(result))
-        writer.writerow({"Team Number": int(team_number)} | result)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [
+            executor.submit(scrape_and_write_team_status, team_number.strip(), writer)
+            for team_number in teams
+        ]
+        concurrent.futures.wait(futures)
 
     file.close()
