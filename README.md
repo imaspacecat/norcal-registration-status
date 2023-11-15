@@ -20,3 +20,6 @@ This Python script leverages web scraping to gather team registration status dat
 
 ## Output
 The script generates a CSV file (`team_status.csv`) containing team registration status information. The CSV file includes details such as the team number, QT #1, QT #2, QT #3, etc.
+
+Example:
+![Alt text](image.png)
